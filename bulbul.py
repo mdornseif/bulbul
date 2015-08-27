@@ -79,10 +79,10 @@ class FirstParser(ast.NodeVisitor):
         for k, v in zip(stmt_dict.keys, stmt_dict.values):
             # d[k.s] = v.s
             # print (v)
-            res.append(k.js+":" + v.js)
+            res.append("%s: %s" % (k.js, v.js))
         # stmt_dict.js = json.dumps(res)
         # stmt_dict.js=stmt_dict.js.replace('\\\"', '')
-        stmt_dict.js = '{'+','.join(res)+'}'
+        stmt_dict.js = '{%s}' % ','.join(res)
         return stmt_dict
 
     def visit_List(self, node):
@@ -91,7 +91,7 @@ class FirstParser(ast.NodeVisitor):
 
         for v in node.elts:
             d.append(v.js)
-        node.js = '[%s]' % ','.join(d)
+        node.js = '[%s]' % ','.join([str(x) for x in d])
 
     def visit_Module(self, stmt_module):
         scope = {'variables': []}

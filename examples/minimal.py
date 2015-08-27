@@ -7,14 +7,14 @@ f = ['a']
 # g = (1, 2)
 h = [1, 2]
 i = {'a': 'b'}
-# j = {'a': 1}
+j = {'a': 1}
 # k = {'a', 'b'}
 # l = {'a', 1}
 m = list()
 n = dict()
 o = dict(a='b')  # does not work
 p = set()
-q = set('a')
+q = set('a', 1)
 
 def foo():
     return 1
