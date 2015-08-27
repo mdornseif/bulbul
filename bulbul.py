@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # Fat-free Python3 to Javascript/ES6 compiler attempt.
 # see https://github.com/ahmedaliadeel/bulbul
 
@@ -36,13 +37,14 @@ class FirstParser(ast.NodeVisitor):
             listofimports.append(imp.name)
 
         if len(listofimports) == 1:
-            stmt_module.js = ('import ' + ','.join(listofimports) + ' from \'' +
-                              str(stmt_module.module).replace('.', '/') + '\';')
+            stmt_module.js = "import %s from '%s';" % (
+                ','.join(listofimports),
+                str(stmt_module.module).replace('.', '/'))
 
         else:
-            stmt_module.js = (
-                'import { ' + ','.join(listofimports) + '} from \'' + str(stmt_module.module).replace('.', '/') + '\';')
-        pass
+            stmt_module.js = "import { %s } from '%s';" % (
+                ','.join(listofimports),
+                str(stmt_module.module).replace('.', '/'))
         # self.continue_(stmt_module)
 
     def visit_ClassDef(self, node):
@@ -52,14 +54,12 @@ class FirstParser(ast.NodeVisitor):
         self.continue_(node)
         r = ''
         for call in node.decorator_list:
-
-            r = r + ('@'+call.func.id+'('+','.join([arg.js for arg in call.args])+')') + '\n'
-
-        r = r + ('class '+node.name+' { \n')
-        r = r + (';\n').join([b.js for b in node.body]) + '\n'
-
-        r = r+'}'
-
+            r += '@%s(%s)\n' % (
+                call.func.id,
+                ','.join([arg.js for arg in call.args]))
+        r += 'class %s {\n' % node.name
+        r += ';\n'.join([b.js for b in node.body])
+        r += '\n}'
         node.js = r
 
     def visit_Dict(self, stmt_dict):
@@ -91,7 +91,7 @@ class FirstParser(ast.NodeVisitor):
 
         for v in node.elts:
             d.append(v.js)
-        node.js = '['+','.join(d)+']'
+        node.js = '[%s]' % ','.join(d)
 
     def visit_Module(self, stmt_module):
         scope = {'variables': []}
@@ -104,7 +104,6 @@ class FirstParser(ast.NodeVisitor):
             print(b.js)
 
     def visit_Assign(self, node):
-
         self.continue_(node)
         node.js = ''
         node.alreadyassigned = []
@@ -117,10 +116,14 @@ class FirstParser(ast.NodeVisitor):
         for t in node.targets:
             if isinstance(t, ast.Attribute):
                 # llist.append(('this' if replace_self_with_this else t.value.id )+'.'+t.attr)
-                llist.append(('this' if replace_self_with_this else t.value.js)+'.'+t.attr)
+                llist.append(
+                    "%s.%s" % (
+                        ('this' if replace_self_with_this else t.value.js),
+                        t.attr)
+                )
             else:
                 if t.id not in node._scope['variables']:
-                    lfs = 'var ' + t.id  # + ' : any'
+                    lfs = 'var %s' % t.id  # + ' : any'
 
                     node._scope['variables'].append(t.id)
                 else:
@@ -128,16 +131,15 @@ class FirstParser(ast.NodeVisitor):
 
         leftside = lfs + (','.join(llist))
         rightside = (node.value.js)
-        node.js = (str(leftside) + ' = ' + str(rightside) + ' ;')
+        node.js = "%s = %s;" % (leftside, rightside)
 
     def visit_Num(self, node):
         self.continue_(node)
         node.js = (node.n)
 
     def visit_Str(self, node):
-
         self.continue_(node)
-        node.js = '"'+str(node.s)+'"'
+        node.js = '"%s"' % node.s
         # node.js = node.s
         node.jsvalue = node.s
 
@@ -164,7 +166,7 @@ class FirstParser(ast.NodeVisitor):
         # print (node.attr)
         # node.js = (str(node.value.id) if hasattr(node.value, 'id') else node.attr)+"." +str(node.attr)
         # print (str(node.attr))
-        node.js = node.value.js + '.' + node.attr
+        node.js = "%s.%s" % (node.value.js, node.attr)
         node.jsvalue = node.js
         # print (node.js)
 
@@ -174,7 +176,7 @@ class FirstParser(ast.NodeVisitor):
         node.js = ''
         if (hasattr(node.value, 'js')):
             rightside = (node.value.js)
-            node.js = 'return '+str(rightside) + ';'
+            node.js = 'return %s ;' % rightside
 
     def visit_Call(self, node):
         self.continue_(node)
@@ -182,12 +184,19 @@ class FirstParser(ast.NodeVisitor):
         # JSX plug
         if funcname == 'bb_jsx':
             funcname = ''
-            node.js = funcname + '' + ''+','.join([(arg.jsvalue) for arg in node.args])+''
+            node.js = "%s " % (
+                funcname,
+                ','.join([(arg.jsvalue) for arg in node.args])
+            )
         elif funcname == 'bb_export':
-            node.js = 'export ' + ','.join([str(arg.jsvalue) for arg in node.args])+';'
+            node.js = 'export %s;' % ','.join(
+                [str(arg.jsvalue) for arg in node.args])
         else:
             # node.js = str(node.func.id if type(node.func)!=ast.Attribute else node.func.value.id)   +'('+','.join([arg.js for arg in node.args])+')'
-            node.js = funcname + '' + '('+','.join([str(arg.js) for arg in node.args])+')'
+            node.js = "%s(%s)" % (
+                funcname,
+                ','.join([str(arg.js) for arg in node.args])
+            )
 
     def visit_FunctionDef(self, node):
         scope = {'variables': []}
@@ -205,11 +214,13 @@ class FirstParser(ast.NodeVisitor):
 
         if node.name == '__init__':
             funcname = "constructor"
-        node.js = funcname + \
-            '('+','.join([arg.arg for arg in node.args.args[1 if skip_first_arg else 0:]])+')  { '
+        node.js = "%s(%s) {" % (
+            funcname,
+            ','.join([arg.arg
+                      for arg in node.args.args[1 if skip_first_arg else 0:]])
+        )
         for a in node.body:
-
-            node.js += '\n   '+(a.js) + '\n'
+            node.js += '\n   %s\n' % (a.js)
         node.js += '}'
 
     def visit_Pass(self, node):
@@ -221,27 +232,34 @@ class FirstParser(ast.NodeVisitor):
         #    a._scope = scope
         # self.continue_(a)
         self.continue_(node)
-        node.js = "function " + '' + '('+','.join([arg.arg for arg in node.args.args])+')  { '
+        node.js = "function (%s) { " % ','.join(
+            [arg.arg for arg in node.args.args])
         # for a in node.body:
-        node.js += '\n  return '+(node.body.js) + ';\n'
-        node.js += '}'
+        node.js += '\n  return %s ;\n}' % (node.body.js)
 
     def visit_IfExp(self, node):
         self.continue_(node)
-        node.js = '('+node.test.js+' ? ' + str(node.body.js) + ':' + str(node.orelse.js)+')'
+        node.js = '(%s ? %s : %s)' % (
+            node.test.js,
+            node.body.js,
+            node.orelse.js)
 
     def visit_Compare(self, node):
         self.continue_(node)
-        node.js = '('+node.left.js+'=='+(node.comparators[0].js)+')'
+        node.js = '(%s==%s)' % (
+            node.left.js,
+            node.comparators[0].js)
 
     def visit_BinOp(self, stmt_binop):
-
         opmap = {}
         opmap[str((ast.Add))] = '+'
         opmap[str((ast.Sub))] = '-'
         opmap[str((ast.Div))] = '/'
         self.continue_(stmt_binop)
-        stmt_binop.js = str(stmt_binop.left.js) + opmap[str(type(stmt_binop.op))] + str(stmt_binop.right.js)
+        stmt_binop.js = "%s%s%s" % (
+            stmt_binop.left.js,
+            opmap[str(type(stmt_binop.op))],
+            stmt_binop.right.js)
 
 
 class ReactParser(FirstParser):
