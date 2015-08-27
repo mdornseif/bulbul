@@ -3,8 +3,8 @@ import sys
 import os
 import simplejson as json
 #x = ast.parse(open("dec4.py").read())
-from bs4 import BeautifulSoup
-import bs4
+#from bs4 import BeautifulSoup
+#import bs4
 class FirstParser(ast.NodeVisitor):
     def __init__(self):
         pass
@@ -72,7 +72,7 @@ class FirstParser(ast.NodeVisitor):
         for k,v in zip(stmt_dict.keys, stmt_dict.values):
             #d[k.s] = v.s
             #print (v)
-            res.append(k.js+":" + v.js )
+            res.append("%s:%s" % (k.js, v.js))
         #stmt_dict.js = json.dumps(res)
         #stmt_dict.js=stmt_dict.js.replace('\\\"', '')
         stmt_dict.js = '{'+','.join(res)+'}'
