@@ -16,7 +16,7 @@ for dirname, dirnames, filenames in os.walk(sys.argv[1]):
         except subprocess.CalledProcessError:
             print "ERROR"
             pyerrors.append(name)
-        command = "python bulbul2.py %s | babel | node" % name
+        command = "python bulbul2.py %s | babel --optional es7.comprehensions | node" % name
         print "#", command
         try:
             jsoutput = subprocess.check_output(command, shell=True)

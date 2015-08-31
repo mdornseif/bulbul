@@ -199,8 +199,8 @@ class BulbulGenerator(astor.code_gen.SourceGenerator):
             if node.func.id == 'object':
                 node.func.id = "Object"
             # include shim
-            if node.func.id == 'len':
-                shims.add('len')
+            if node.func.id in set(('len', 'sum')):
+                shims.add(node.func.id)
             # rewrite to literal
             if node.func.id == 'list':
                 with self.delimit('[]'):
@@ -293,6 +293,12 @@ class BulbulGenerator(astor.code_gen.SourceGenerator):
             self.visit_arguments(node.args)
             self.write(': ', node.body)
 
+    def visit_ListComp(self, node):
+        with self.delimit('[]'):
+            self.write(*node.generators)
+            self.write(node.elt)
+
+
     def visit_IfExp(self, node):
         with self.delimit(node) as delimiters:
             set_precedence(delimiters.p + 1, node.body, node.test)
@@ -313,6 +319,13 @@ class BulbulGenerator(astor.code_gen.SourceGenerator):
             b._scope = scope
         self.write(*node.body)
 
+    def visit_comprehension(self, node):
+        set_precedence(node, node.iter, *node.ifs)
+        set_precedence(Precedence.comprehension_target, node.target)
+        self.write(' for (', node.target, ' of ', node.iter, ')')
+        for if_ in node.ifs:
+            self.write(' if ', if_)
+
 
 def to_source(node, indent_with=' ' * 4, add_line_information=False,
               pretty_string=astor.code_gen.pretty_string, pretty_source=astor.code_gen.pretty_source):
@@ -332,4 +345,7 @@ print(to_source(a, add_line_information=False))
 if shims:
     print "// bulbul2 helper functions"
     if 'len' in shims:
-        print "function len(l) { return l.length; }"
+        print "function len(l) { return l.length; };"
+    if 'sum' in shims:
+        print "function sum(l) { return l.reduce(function(a, b) { return a + b; })};"
+ 

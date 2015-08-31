@@ -9,3 +9,28 @@ def foo(f):
 print foo(1)
 a.append('b')
 print a
+
+def comperend1(data):
+    summen1 = []
+    for line in data:
+        summen1.append(line.menge * line.einzelpreis)
+    return sum(summen1)
+
+
+def comperend2(data):
+    summen2 = [line.menge * line.einzelpreis for line in data]
+    return sum(summen2)
+
+
+class Test():
+    pass
+
+a = Test()
+a.menge = 5
+a.einzelpreis = 3
+b = Test()
+b.menge = 7
+b.einzelpreis = 13
+
+print comperend1([a, b])
+print comperend2([a, b])
