@@ -89,8 +89,12 @@ class BulbulGenerator(astor.code_gen.SourceGenerator):
         self.visit(node.value)
 
     def visit_FunctionDef(self, node, async=False):
-        scope = {'variables': []}
+        scope = {'variables': [], 'functions': []}
         skip_first_arg = False
+
+        if hasattr(node, '_scope'):
+            node._scope.setdefault('functions', []).append(node.name)
+
         if hasattr(node, '_scope'):
             scope = dict(scope, **node._scope)
             if 'isclass' in node._scope:
@@ -314,10 +318,14 @@ class BulbulGenerator(astor.code_gen.SourceGenerator):
             self.body_or_else(node)
 
     def visit_Module(self, node):
-        scope = {'variables': []}
+        scope = {'variables': [], 'functions': []}
         for b in node.body:
             b._scope = scope
         self.write(*node.body)
+        self.write('\n', '// exports for commonJS')
+        for funcname in scope.get('functions', []):
+            if not funcname.startswith('_'):
+                self.write('\n', 'exports.%s' % funcname, ' = ', funcname)
 
     def visit_comprehension(self, node):
         set_precedence(node, node.iter, *node.ifs)
