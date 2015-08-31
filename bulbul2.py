@@ -355,5 +355,5 @@ if shims:
     if 'len' in shims:
         print "function len(l) { return l.length; };"
     if 'sum' in shims:
-        print "function sum(l) { return l.reduce(function(a, b) { return a + b; })};"
+        print "function sum(l) { return [0].concat(l).reduce(function(a, b) { return a + b; })};"
  
