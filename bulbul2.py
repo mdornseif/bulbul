@@ -190,12 +190,13 @@ class BulbulGenerator(astor.code_gen.SourceGenerator):
             else:
                 want_comma.append(True)
 
-
         # special cases for build-ins
         if isinstance(node.func, ast.Attribute):
             name = node.func.attr
             if node.func.attr == 'append':
-                node.func.attr = 'push'
+                node.func.attr = 'push'  # rewrite Method name
+            if node.func.attr == 'values':
+                node.func.attr = 'entries'  # rewrite Method name
         elif isinstance(node.func, ast.Name):
             name = node.func.id
             if node.func.id == 'int':
