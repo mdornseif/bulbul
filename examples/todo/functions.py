@@ -11,8 +11,14 @@ def lam(z):
 def tup():
     1, 2
 
+def func1():
+    foo = 1
+
+def func2():
+    foo =2
+
 
 print baz()
 print foobar(1, 'a')
 print lam(4)
-
+print func1(), func2()
