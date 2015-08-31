@@ -7,6 +7,11 @@ Bulbul is a Python3 like language.
 
 This is an experimental project not currently ready for production use. Bulbul is a very simple compiler, as long as its valid python3 like syntax it will work. The current code miss several python constructs but the examples really work.
 
+`bulbul2.py` is an anternative implementation approach. To see what is already working run
+
+   python  test.py examples/work/
+
+
 Mission
 =======
 The aim of this project is to provide best support for AngularJS both 1.X and 2.X series, React 0.13 (ES6) and Aurelia and some other essential javascript stack libraries (basically to rule the world).
@@ -37,32 +42,32 @@ def main_controller():
     todoList.todos = [
       {'text':'learn angular', 'done':True},
       {'text':'build an angular app', 'done':False}]
-    
+
     def  addTodo():
         todoList.todos.push({'text':todoList.todoText, 'done':False})
         todoList.todoText = ''
     todoList.addTodo = addTodo
-    
+
     def remaining():
         count = todoList.todos.reduce(lambda p,c :  p+(1 if c.done == True else 0), 0)
         return count
     todoList.remaining = remaining
-    
+
     def archive():
         todoList.todos.length = 0
-    todoList.archive = archive    
+    todoList.archive = archive
 
 angular.module('todoApp', []).controller('TodoListController', main_controller)
- 
+
 ```
 Into this Javscript ES5 Code
 ```javascript
-function main_controller()  { 
+function main_controller()  {
    var todoList = this ;
 
    todoList.todos = [{"text":"learn angular","done":true},{"text":"build an angular app","done":false}] ;
 
-   function addTodo()  { 
+   function addTodo()  {
    todoList.todos.push({"text":todoList.todoText,"done":false})
 
    todoList.todoText = "" ;
@@ -70,8 +75,8 @@ function main_controller()  {
 
    todoList.addTodo = addTodo ;
 
-   function remaining()  { 
-   var count = todoList.todos.reduce(function (p,c)  { 
+   function remaining()  {
+   var count = todoList.todos.reduce(function (p,c)  {
   return p+((c.done==true) ? 1:0);
 },0) ;
 
@@ -80,7 +85,7 @@ function main_controller()  {
 
    todoList.remaining = remaining ;
 
-   function archive()  { 
+   function archive()  {
    todoList.todos.length = 0 ;
 }
 
@@ -94,7 +99,7 @@ angular.module("todoApp",[]).controller("TodoListController",main_controller)
 Bulbul converts this React 0.13.X python code
 ```python
 'use strict'
-from react import React 
+from react import React
 
 class HelloWorld(React.Component):
     def render():
@@ -103,7 +108,7 @@ class HelloWorld(React.Component):
         message ='React has been successfully running for ' + seconds + ' seconds.'
 
         return bb_jsx('<p>{message}</p>')
-bb_export('default HelloWorld')      
+bb_export('default HelloWorld')
 
 start = Date.now()
 setInterval(lambda : React.render(bb_jsx('<HelloWorld elapsed={new Date().getTime() - start} />'), document.getElementById('body') ), 50)
@@ -113,8 +118,8 @@ Into this ES6 Code
 ```javascript
 "use strict"
 import React from 'react';
-class HelloWorld { 
-render()  { 
+class HelloWorld {
+render()  {
    var elapsed = this.props.elapsed/100.0 ;
 
    var seconds = elapsed/10.0 ;
@@ -126,7 +131,7 @@ render()  {
 }
 export default HelloWorld;
 var start = Date.now() ;
-setInterval(function ()  { 
+setInterval(function ()  {
   return React.render(<HelloWorld elapsed={new Date().getTime() - start} />,document.getElementById("body"));
 },50)
 
