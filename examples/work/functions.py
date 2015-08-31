@@ -1,11 +1,6 @@
 def baz():
     pass
 
-
-#def baz():
-#    return  # does not work so far !
-
-
 def foo():
     a = 1
     a = 2
@@ -14,11 +9,6 @@ def foo():
 
 def bar(a, b):
     return [a, b]
-
-
-#def foobar(a, b=1):
-#   return [a, b]
-
 
 def getval(a):
     return 5 - a
@@ -31,13 +21,6 @@ def getval2(x):
     localvariable2 = 2
     return localvariable
 
-
-#def lam():
-#    x = 4
-#    return lambda x: z+x
-
-
-baz()  #  `None` in Python, `undefined` in Javascript
 print foo()
 print bar(1, 'a')
 z = 1 + 2 + getval2(getval(1))

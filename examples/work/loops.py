@@ -6,7 +6,3 @@ print "---"
 
 for x in [4, 5, 6]:
     print x
-
-#for x in range(3):
-#    print x
-

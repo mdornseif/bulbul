@@ -7,7 +7,7 @@ Bulbul is a Python3 like language.
 
 This is an experimental project not currently ready for production use. Bulbul is a very simple compiler, as long as its valid python3 like syntax it will work. The current code miss several python constructs but the examples really work.
 
-`bulbul2.py` is an anternative implementation approach. To see what is already working run
+`bulbul2.py` is an alternative implementation approach. To see what is already working run
 
    python  test.py examples/work/
 
@@ -27,6 +27,8 @@ Features
 
 Build Instructions
 =================
+
+First do `pip install astor`.
 
 Command: bulbul.py [inputpython.py] > [output.js]
 
