@@ -311,8 +311,13 @@ class BulbulGenerator(astor.code_gen.SourceGenerator):
     def visit_For(self, node, async=False):
         set_precedence(node, node.target)
         prefix = 'async ' if async else ''
+        #self.statement(node, '%sfor (var ' % prefix,
+        #               node.target, ' of ', node.iter, ')', '\n')
+        #with self.delimit('{}'):
+        #    self.body_or_else(node)
         self.statement(node, '%sfor (var ' % prefix,
                        node.target, ' of ', node.iter, ')', '\n')
+        self.write('if(', node.iter, '.hasOwnProperty(', node.target, '))')
         with self.delimit('{}'):
             self.body_or_else(node)
 
@@ -355,4 +360,4 @@ if shims:
         print "function len(l) { return l.length; };"
     if 'sum' in shims:
         print "function sum(l) { return [0].concat(l).reduce(function(a, b) { return a + b; })};"
- 
+
